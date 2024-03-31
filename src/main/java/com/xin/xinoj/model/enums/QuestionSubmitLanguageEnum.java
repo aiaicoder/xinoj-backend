@@ -10,16 +10,19 @@ import java.util.stream.Collectors;
  * 用户角色枚举
  *
  * @author <a href="https://github.com/liyupi">程序员小新</a>
- * 
  */
 public enum QuestionSubmitLanguageEnum {
 
-    JAVA("Java", "Java"),
-    CPP("CPP", "CPP"),
-    GOLANG("GoLang", "GoLang"),
-    JAVASCRIPT("JavaScript", "JavaScript"),
-    TYPESCRIPT("TypeScript", "TypeScript"),
-    PYTHON("Python", "Python");
+    JAVA("Java", "java"),
+    CPP("CPP", "cpp"),
+    GOLANG("GoLang", "go"),
+    JAVASCRIPT("JavaScript", "javaScript"),
+    TYPESCRIPT("TypeScript", "typeScript"),
+    PYTHON("Python", "python"),
+    Lua("Lua", "lua"),
+    C("C", "c");
+
+
 
     private final String text;
 
@@ -46,7 +49,7 @@ public enum QuestionSubmitLanguageEnum {
      * @return
      */
     public static QuestionSubmitLanguageEnum getEnumByValue(String value) {
-        if (ObjectUtil.isEmpty( value)) {
+        if (ObjectUtil.isEmpty(value)) {
             return null;
         }
         for (QuestionSubmitLanguageEnum anEnum : QuestionSubmitLanguageEnum.values()) {

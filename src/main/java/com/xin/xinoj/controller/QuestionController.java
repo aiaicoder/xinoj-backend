@@ -13,6 +13,7 @@ import com.xin.xinoj.exception.ThrowUtils;
 import com.xin.xinoj.model.dto.question.*;
 import com.xin.xinoj.model.entity.Question;
 import com.xin.xinoj.model.entity.User;
+import com.xin.xinoj.model.enums.QuestionSubmitLanguageEnum;
 import com.xin.xinoj.model.vo.QuestionVO;
 import com.xin.xinoj.service.QuestionService;
 import com.xin.xinoj.service.UserService;
@@ -22,7 +23,10 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 帖子接口
@@ -160,6 +164,20 @@ public class QuestionController {
     }
 
     /**
+     * 返回对应语言的枚举值给前端
+     *
+     * @return
+     */
+    @GetMapping("/languages")
+    public BaseResponse<List<String>> getAllLanguages() {
+        List<String> statusMap = new ArrayList<>();
+        for (QuestionSubmitLanguageEnum status : QuestionSubmitLanguageEnum.values()) {
+            statusMap.add(status.getValue());
+        }
+        return ResultUtils.success(statusMap);
+    }
+
+    /**
      * 分页获取列表（仅管理员）
      *
      * @param questionQueryRequest
@@ -170,8 +188,7 @@ public class QuestionController {
     public BaseResponse<Page<Question>> listQuestionByPage(@RequestBody QuestionQueryRequest questionQueryRequest) {
         long current = questionQueryRequest.getCurrent();
         long size = questionQueryRequest.getPageSize();
-        Page<Question> questionPage = questionService.page(new Page<>(current, size),
-                questionService.getQueryWrapper(questionQueryRequest));
+        Page<Question> questionPage = questionService.page(new Page<>(current, size), questionService.getQueryWrapper(questionQueryRequest));
         return ResultUtils.success(questionPage);
     }
 
@@ -183,14 +200,12 @@ public class QuestionController {
      * @return
      */
     @PostMapping("/list/page/vo")
-    public BaseResponse<Page<QuestionVO>> listQuestionVOByPage(@RequestBody QuestionQueryRequest questionQueryRequest,
-                                                               HttpServletRequest request) {
+    public BaseResponse<Page<QuestionVO>> listQuestionVOByPage(@RequestBody QuestionQueryRequest questionQueryRequest, HttpServletRequest request) {
         long current = questionQueryRequest.getCurrent();
         long size = questionQueryRequest.getPageSize();
         // 限制爬虫
         ThrowUtils.throwIf(size > 20, ErrorCode.PARAMS_ERROR);
-        Page<Question> questionPage = questionService.page(new Page<>(current, size),
-                questionService.getQueryWrapper(questionQueryRequest));
+        Page<Question> questionPage = questionService.page(new Page<>(current, size), questionService.getQueryWrapper(questionQueryRequest));
         return ResultUtils.success(questionService.getQuestionVOPage(questionPage, request));
     }
 
@@ -202,8 +217,7 @@ public class QuestionController {
      * @return
      */
     @PostMapping("/my/list/page/vo")
-    public BaseResponse<Page<QuestionVO>> listMyQuestionVOByPage(@RequestBody QuestionQueryRequest questionQueryRequest,
-                                                                 HttpServletRequest request) {
+    public BaseResponse<Page<QuestionVO>> listMyQuestionVOByPage(@RequestBody QuestionQueryRequest questionQueryRequest, HttpServletRequest request) {
         if (questionQueryRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
@@ -213,8 +227,7 @@ public class QuestionController {
         long size = questionQueryRequest.getPageSize();
         // 限制爬虫
         ThrowUtils.throwIf(size > 20, ErrorCode.PARAMS_ERROR);
-        Page<Question> questionPage = questionService.page(new Page<>(current, size),
-                questionService.getQueryWrapper(questionQueryRequest));
+        Page<Question> questionPage = questionService.page(new Page<>(current, size), questionService.getQueryWrapper(questionQueryRequest));
         return ResultUtils.success(questionService.getQuestionVOPage(questionPage, request));
     }
 
