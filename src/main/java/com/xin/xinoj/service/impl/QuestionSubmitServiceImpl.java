@@ -2,14 +2,13 @@ package com.xin.xinoj.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xin.xinoj.common.ErrorCode;
 import com.xin.xinoj.constant.CommonConstant;
 import com.xin.xinoj.exception.BusinessException;
+import com.xin.xinoj.judge.JudgeService;
 import com.xin.xinoj.mapper.QuestionSubmitMapper;
-import com.xin.xinoj.model.dto.question.QuestionQueryRequest;
 import com.xin.xinoj.model.dto.questionsubmit.QuestionSubmitAddRequest;
 import com.xin.xinoj.model.dto.questionsubmit.QuestionSubmitQueryRequest;
 import com.xin.xinoj.model.entity.Question;
@@ -20,39 +19,35 @@ import com.xin.xinoj.model.enums.QuestionSubmitStatusEnum;
 import com.xin.xinoj.model.enums.QuestionSubmitVisibleEnum;
 import com.xin.xinoj.model.vo.QuestionSubmitVO;
 import com.xin.xinoj.model.vo.QuestionVO;
-import com.xin.xinoj.model.vo.UserVO;
 import com.xin.xinoj.service.QuestionService;
-
 import com.xin.xinoj.service.QuestionSubmitService;
-
 import com.xin.xinoj.utils.SqlUtils;
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.aop.framework.AopContext;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import java.io.Serializable;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
-* @author 15712
-* @description 针对表【question_submit(题目提交)】的数据库操作Service实现
-* @createDate 2024-03-25 16:24:20
-*/
+ * @author 15712
+ * @description 针对表【question_submit(题目提交)】的数据库操作Service实现
+ * @createDate 2024-03-25 16:24:20
+ */
 @Service
 public class QuestionSubmitServiceImpl extends ServiceImpl<QuestionSubmitMapper, QuestionSubmit>
-    implements QuestionSubmitService {
+        implements QuestionSubmitService {
 
     @Resource
     private QuestionService questionService;
 
     @Resource
     private UserServiceImpl userService;
+
+    @Resource
+    @Lazy
+    private JudgeService judgeService;
 
 
     /**
@@ -92,11 +87,9 @@ public class QuestionSubmitServiceImpl extends ServiceImpl<QuestionSubmitMapper,
             throw new BusinessException(ErrorCode.SYSTEM_ERROR, "数据插入失败");
         }
         Long questionSubmitId = questionSubmit.getId();
-        //todo 异步调用判题服务
+        // 异步调用判题服务
+        judgeService.doJudge(questionSubmitId);
         return questionSubmitId;
-
-
-
     }
 
 
@@ -123,8 +116,8 @@ public class QuestionSubmitServiceImpl extends ServiceImpl<QuestionSubmitMapper,
         queryWrapper.eq(ObjectUtils.isNotEmpty(language), "language", language);
         queryWrapper.eq(ObjectUtils.isNotEmpty(userId), "userId", userId);
         queryWrapper.eq(ObjectUtils.isNotEmpty(questionId), "questionId", questionId);
-        queryWrapper.eq(QuestionSubmitVisibleEnum.getEnumByValue(visible) !=null , "visible", visible);
-        queryWrapper.eq(QuestionSubmitStatusEnum.getEnumByValue(status) !=null , "status", status);
+        queryWrapper.eq(QuestionSubmitVisibleEnum.getEnumByValue(visible) != null, "visible", visible);
+        queryWrapper.eq(QuestionSubmitStatusEnum.getEnumByValue(status) != null, "status", status);
         queryWrapper.eq("isDelete", false);
         queryWrapper.orderBy(SqlUtils.validSortField(sortField), sortOrder.equals(CommonConstant.SORT_ORDER_ASC),
                 sortField);
@@ -138,11 +131,12 @@ public class QuestionSubmitServiceImpl extends ServiceImpl<QuestionSubmitMapper,
         Question question = questionService.getById(questionSubmit.getQuestionId());
         questionSubmitVo.setQuestionVO(QuestionVO.objToVo(question));
         questionSubmitVo.setUserVO(userService.getUserVO(loginUser));
-        if (!questionSubmitVo.getUserId().equals(loginUser.getId()) && userService.isAdmin(loginUser)){
+        if (!questionSubmitVo.getUserId().equals(loginUser.getId()) && userService.isAdmin(loginUser)) {
             questionSubmitVo.setCode(null);
         }
         return questionSubmitVo;
     }
+
 
     @Override
     public Page<QuestionSubmitVO> getQuestionSubmitVOPage(Page<QuestionSubmit> questionSubmitPage, User loginUser) {

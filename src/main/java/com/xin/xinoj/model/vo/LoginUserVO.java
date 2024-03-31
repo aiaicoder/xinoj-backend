@@ -33,6 +33,12 @@ public class LoginUserVO implements Serializable {
      */
     private String userProfile;
 
+
+    /**
+     * 用户性别
+     */
+    private Integer gender;
+
     /**
      * 用户角色：user/admin/ban
      */
@@ -47,6 +53,12 @@ public class LoginUserVO implements Serializable {
      * 更新时间
      */
     private Date updateTime;
+
+    /**
+     * 用户返回的token
+     */
+    private String token;
+
 
     private static final long serialVersionUID = 1L;
 }

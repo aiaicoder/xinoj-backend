@@ -51,6 +51,11 @@ public class User implements Serializable {
     private String userRole;
 
     /**
+     * 用户性别
+     */
+    private Integer gender;
+
+    /**
      * 创建时间
      */
     private Date createTime;
@@ -59,12 +64,14 @@ public class User implements Serializable {
      * 更新时间
      */
     private Date updateTime;
-
     /**
      * 是否删除
      */
     @TableLogic
     private Integer isDelete;
+
+    @TableField(exist = false)//只为了前端和后端的验证，该字段不加在数据库表里面
+    private String token;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

@@ -1,7 +1,6 @@
 package com.xin.xinoj.model.enums;
 
 import cn.hutool.core.util.ObjectUtil;
-import org.apache.commons.lang3.ObjectUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -12,7 +11,7 @@ import java.util.stream.Collectors;
  *
  * @author <a href="https://github.com/liyupi">程序员小新</a>
  */
-public enum JudgeInfoMessage {
+public enum JudgeInfoMessageEnum {
 
     ACCEPTED("成功", "Accepted"),
     WRONG_ANSWER("答案错误", "Wrong Answer"),
@@ -30,7 +29,7 @@ public enum JudgeInfoMessage {
 
     private final String value;
 
-    JudgeInfoMessage(String text, String value) {
+    JudgeInfoMessageEnum(String text, String value) {
         this.text = text;
         this.value = value;
     }
@@ -50,11 +49,11 @@ public enum JudgeInfoMessage {
      * @param value
      * @return
      */
-    public static JudgeInfoMessage getEnumByValue(String value) {
+    public static JudgeInfoMessageEnum getEnumByValue(String value) {
         if (ObjectUtil.isEmpty(null)) {
             return null;
         }
-        for (JudgeInfoMessage anEnum : JudgeInfoMessage.values()) {
+        for (JudgeInfoMessageEnum anEnum : JudgeInfoMessageEnum.values()) {
             if (anEnum.value.equals(value)) {
                 return anEnum;
             }

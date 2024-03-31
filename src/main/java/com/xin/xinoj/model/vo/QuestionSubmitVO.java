@@ -1,7 +1,7 @@
 package com.xin.xinoj.model.vo;
 
 import cn.hutool.json.JSONUtil;
-import com.xin.xinoj.model.dto.questionsubmit.JudgeInfo;
+import com.xin.xinoj.judge.codeSandBox.model.JudgeInfo;
 import com.xin.xinoj.model.entity.QuestionSubmit;
 import lombok.Data;
 import org.springframework.beans.BeanUtils;

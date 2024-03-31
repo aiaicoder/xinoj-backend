@@ -6,6 +6,7 @@ import com.xin.xinoj.model.dto.user.UserQueryRequest;
 import com.xin.xinoj.model.entity.User;
 import com.xin.xinoj.model.vo.LoginUserVO;
 import com.xin.xinoj.model.vo.UserVO;
+import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -15,6 +16,7 @@ import java.util.List;
  *
  * @author <a href="https://github.com/liyupi">程序员小新</a>
  */
+@Service
 public interface UserService extends IService<User> {
 
     /**
@@ -32,10 +34,9 @@ public interface UserService extends IService<User> {
      *
      * @param userAccount  用户账户
      * @param userPassword 用户密码
-     * @param request
      * @return 脱敏后的用户信息
      */
-    LoginUserVO userLogin(String userAccount, String userPassword, HttpServletRequest request);
+    LoginUserVO userLogin(String userAccount, String userPassword);
 
 
     /**
@@ -47,6 +48,14 @@ public interface UserService extends IService<User> {
     User getLoginUser(HttpServletRequest request);
 
     /**
+     * 获取当前登录用户
+     *
+     * @return
+     */
+    User getLoginUser();
+
+
+    /**
      * 获取当前登录用户（允许未登录）
      *
      * @param request
@@ -54,13 +63,14 @@ public interface UserService extends IService<User> {
      */
     User getLoginUserPermitNull(HttpServletRequest request);
 
+
     /**
      * 是否为管理员
      *
-     * @param request
      * @return
      */
-    boolean isAdmin(HttpServletRequest request);
+    boolean isAdmin();
+
 
     /**
      * 是否为管理员
@@ -77,6 +87,13 @@ public interface UserService extends IService<User> {
      * @return
      */
     boolean userLogout(HttpServletRequest request);
+
+    /**
+     * 用户注销
+     *
+     * @return
+     */
+    boolean userLogout();
 
     /**
      * 获取脱敏的已登录用户信息

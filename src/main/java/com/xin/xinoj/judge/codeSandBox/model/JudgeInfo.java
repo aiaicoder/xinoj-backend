@@ -1,4 +1,4 @@
-package com.xin.xinoj.model.dto.questionsubmit;
+package com.xin.xinoj.judge.codeSandBox.model;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
