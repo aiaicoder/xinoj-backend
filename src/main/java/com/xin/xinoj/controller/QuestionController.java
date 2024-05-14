@@ -8,9 +8,11 @@ import com.xin.xinoj.common.BaseResponse;
 import com.xin.xinoj.common.DeleteRequest;
 import com.xin.xinoj.common.ErrorCode;
 import com.xin.xinoj.common.ResultUtils;
+import com.xin.xinoj.constant.RedisKeyConstant;
 import com.xin.xinoj.constant.UserConstant;
 import com.xin.xinoj.exception.BusinessException;
 import com.xin.xinoj.exception.ThrowUtils;
+import com.xin.xinoj.manager.RedisLimiterManager;
 import com.xin.xinoj.model.dto.question.*;
 import com.xin.xinoj.model.dto.questionsubmit.QuestionSubmitAddRequest;
 import com.xin.xinoj.model.dto.questionsubmit.QuestionSubmitQueryRequest;
@@ -50,6 +52,9 @@ public class QuestionController {
 
     @Resource
     private QuestionSubmitService questionSubmitService;
+
+    @Resource
+    private RedisLimiterManager redisLimiterManager;
 
     // region 增删改查
 
@@ -279,8 +284,6 @@ public class QuestionController {
     }
 
 
-
-
     /**
      * 提交答案
      *
@@ -294,8 +297,15 @@ public class QuestionController {
         }
         // 登录才能提交
         final User loginUser = userService.getLoginUser();
-        Long result = questionSubmitService.doQuestionSubmit(questionSubmitAddRequest, loginUser);
-        return ResultUtils.success(result);
+        boolean rateLimit = redisLimiterManager.doRateLimit(RedisKeyConstant.LIMIT_KEY_PREFIX + loginUser.getId().toString());
+        if (!rateLimit) {
+            throw new BusinessException(ErrorCode.TOO_MANY_REQUEST, "提交过于频繁,请稍后重试");
+        } else {
+            log.info("提交成功,题号：{},用户：{}", questionSubmitAddRequest.getQuestionId(), loginUser.getId());
+            Long result = questionSubmitService.doQuestionSubmit(questionSubmitAddRequest, loginUser);
+            return ResultUtils.success(result);
+        }
+
     }
 
 
@@ -350,7 +360,6 @@ public class QuestionController {
         final User loginUser = userService.getLoginUser();
         return ResultUtils.success(questionSubmitService.getQuestionSubmitVO(questionSubmit, loginUser));
     }
-
 
 
 }

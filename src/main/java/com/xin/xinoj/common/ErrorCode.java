@@ -16,7 +16,8 @@ public enum ErrorCode {
     FORBIDDEN_ERROR(40300, "禁止访问"),
     SYSTEM_ERROR(50000, "系统内部异常"),
     OPERATION_ERROR(50001, "操作失败"),
-    API_REQUEST_ERROR(50010,"远程接口调用失败");
+    API_REQUEST_ERROR(50010,"远程接口调用失败"),
+    TOO_MANY_REQUEST(50011,"请求超过限制");
 
     /**
      * 状态码
