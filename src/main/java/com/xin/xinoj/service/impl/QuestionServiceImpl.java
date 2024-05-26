@@ -1,6 +1,8 @@
 package com.xin.xinoj.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.io.resource.ResourceUtil;
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -10,6 +12,7 @@ import com.xin.xinoj.constant.CommonConstant;
 import com.xin.xinoj.exception.BusinessException;
 import com.xin.xinoj.exception.ThrowUtils;
 import com.xin.xinoj.mapper.QuestionMapper;
+import com.xin.xinoj.model.dto.question.CodeTemplate;
 import com.xin.xinoj.model.dto.question.QuestionQueryRequest;
 import com.xin.xinoj.model.entity.Question;
 import com.xin.xinoj.model.entity.User;
@@ -99,7 +102,6 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question>
         Long userId = questionQueryRequest.getUserId();
         String sortField = questionQueryRequest.getSortField();
         String sortOrder = questionQueryRequest.getSortOrder();
-
         // 拼接查询条件
         queryWrapper.like(StringUtils.isNotBlank(title), "title", title);
         queryWrapper.like(StringUtils.isNotBlank(content), "content", content);
@@ -136,10 +138,15 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question>
                 userVO = userService.getUserVO(loginUser);
             }
         }
+
         if (!userId.equals(loginUser.getId()) && !userService.isAdmin(loginUser)) {
             questionVO.setJudgeCase(null);
             questionVO.setAnswer(null);
         }
+        //添加不同的语言的代码模板
+        String codeTemplateStr = ResourceUtil.readUtf8Str("CodeTemplate.json");
+        CodeTemplate codeTemplate = JSONUtil.toBean(codeTemplateStr, CodeTemplate.class);
+        questionVO.setCodeTemplate(codeTemplate);
         questionVO.setUserVO(userVO);
         return questionVO;
     }

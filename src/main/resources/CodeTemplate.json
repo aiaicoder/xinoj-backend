@@ -1,0 +1,6 @@
+{
+  "java": "import java.util.Scanner;\n// 1:无需package\n// 2: 类名必须Main, 不可修改\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner scan = new Scanner(System.in);\n        //在此输入您的代码...\n        scan.close();\n    }\n}",
+  "python": "import os\nimport sys\n\n# 请在此输入您的代码",
+  "cpp": "#include <iostream>\nusing namespace std;\nint main()\n{\n  // 请在此输入您的代码\n  return 0;\n}",
+  "c": "#include <stdio.h>\n#include <stdlib.h>\n\nint main(int argc, char *argv[])\n{\n  // 请在此输入您的代码\n  return 0;\n}"
+}

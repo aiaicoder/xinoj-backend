@@ -14,7 +14,9 @@ public interface RedisKeyConstant {
     /**
      * 获取免费接口数量的Redis键前缀
      */
-    String USER_COUNT_KEY_PREFIX = "api:free:count:lock:";
+    String CACHE_QUESTION_KEY = "oj:question:";
+
+    String CACHE_QUESTION_PAGE_KEY = "oj:question:page";
 
 
     String USER_CHANGE_KEY_PREFIX = "api:change:lock:";

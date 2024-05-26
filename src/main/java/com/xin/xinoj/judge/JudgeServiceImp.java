@@ -1,12 +1,5 @@
 package com.xin.xinoj.judge;
 
-import com.xin.xinoj.judge.codeSandBox.strategy.JudgeContext;
-import com.xin.xinoj.judge.codeSandBox.strategy.JudgeManager;
-import com.xin.xinoj.judge.codeSandBox.model.JudgeInfo;
-
-import java.util.List;
-import java.util.stream.Collectors;
-
 import cn.hutool.json.JSONUtil;
 import com.xin.xinoj.common.ErrorCode;
 import com.xin.xinoj.exception.BusinessException;
@@ -15,6 +8,9 @@ import com.xin.xinoj.judge.codeSandBox.CodeSandBoxFactory;
 import com.xin.xinoj.judge.codeSandBox.CodeSandBoxProxy;
 import com.xin.xinoj.judge.codeSandBox.model.ExecuteCodeRequest;
 import com.xin.xinoj.judge.codeSandBox.model.ExecuteCodeResponse;
+import com.xin.xinoj.judge.codeSandBox.model.JudgeInfo;
+import com.xin.xinoj.judge.codeSandBox.strategy.JudgeContext;
+import com.xin.xinoj.judge.codeSandBox.strategy.JudgeManager;
 import com.xin.xinoj.model.dto.question.JudgeCase;
 import com.xin.xinoj.model.entity.Question;
 import com.xin.xinoj.model.entity.QuestionSubmit;
@@ -25,6 +21,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 /**
@@ -67,7 +65,7 @@ public class JudgeServiceImp implements JudgeService {
         QuestionSubmit questionSubmitUpdate = new QuestionSubmit();
         questionSubmitUpdate.setStatus(QuestionSubmitStatusEnum.RUNNING.getValue());
         questionSubmitUpdate.setId(questionSubmitId);
-        questionSubmitUpdate.setQuestionId(questionSubmitId);
+        questionSubmitUpdate.setQuestionId(questionId);
         boolean update = questionSubmitService.updateById(questionSubmitUpdate);
         if (!update) {
             throw new BusinessException(ErrorCode.OPERATION_ERROR, "题目状态更新失败");
@@ -86,6 +84,7 @@ public class JudgeServiceImp implements JudgeService {
                 .language(language)
                 .inputList(inputList)
                 .build();
+        //调用远程代码沙箱
         ExecuteCodeResponse executeCodeResponse = codeSandbox.executeCode(executeCodeRequest);
         List<String> outputList = executeCodeResponse.getOutputList();
         JudgeContext judgeContext = new JudgeContext();
@@ -99,7 +98,7 @@ public class JudgeServiceImp implements JudgeService {
         //更新题目状态
         questionSubmitUpdate.setStatus(QuestionSubmitStatusEnum.SUCCESS.getValue());
         questionSubmitUpdate.setId(questionSubmitId);
-        questionSubmitUpdate.setQuestionId(questionSubmitId);
+        questionSubmitUpdate.setQuestionId(questionId);
         questionSubmitUpdate.setJudgeInfo(JSONUtil.toJsonStr(judgeInfo));
         update = questionSubmitService.updateById(questionSubmitUpdate);
         if (!update) {

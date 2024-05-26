@@ -1,6 +1,9 @@
 package com.xin.xinoj.controller;
 
 import cn.dev33.satoken.annotation.SaCheckRole;
+import cn.hutool.core.lang.TypeReference;
+import cn.hutool.core.util.RandomUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.xin.xinoj.annotation.AuthCheck;
@@ -27,12 +30,17 @@ import com.xin.xinoj.service.QuestionSubmitService;
 import com.xin.xinoj.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import static com.xin.xinoj.constant.RedisConstant.*;
+import static com.xin.xinoj.constant.RedisKeyConstant.CACHE_QUESTION_KEY;
 
 /**
  * 帖子接口
@@ -55,6 +63,9 @@ public class QuestionController {
 
     @Resource
     private RedisLimiterManager redisLimiterManager;
+
+    @Resource
+    private StringRedisTemplate stringRedisTemplate;
 
     // region 增删改查
 
@@ -91,6 +102,8 @@ public class QuestionController {
         boolean result = questionService.save(question);
         ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
         long newQuestionId = question.getId();
+        //如果添加了新的问题，就重新刷新缓存
+        stringRedisTemplate.delete(CACHE_QUESTION_KEY);
         return ResultUtils.success(newQuestionId);
     }
 
@@ -162,14 +175,26 @@ public class QuestionController {
      */
     @GetMapping("/get/vo")
     public BaseResponse<QuestionVO> getQuestionVOById(long id) {
+        User loginUser = userService.getLoginUser();
         if (id <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
+        String key = CACHE_QUESTION_KEY + id;
+        String questionJson = stringRedisTemplate.opsForValue().get(key);
+        if (StrUtil.isNotBlank(questionJson)) {
+            //命中直接返回
+            Question question = JSONUtil.toBean(questionJson, Question.class);
+            return ResultUtils.success(questionService.getQuestionVO(question, loginUser));
+        }
         Question question = questionService.getById(id);
         if (question == null) {
+            stringRedisTemplate.opsForValue().set(key, "", CACHE_NULL_TTL + RandomUtil.randomLong(1, 10), TimeUnit.MINUTES);
+            //不存在，直接报错，返回一个空
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
+        } else {
+            //缓存到redis中，加入随机的缓存时间防止缓存穿透
+            stringRedisTemplate.opsForValue().set(key, JSONUtil.toJsonStr(question), CACHE_QUESTION_TTL + RandomUtil.randomLong(1, 3), TimeUnit.MINUTES);
         }
-        User loginUser = userService.getLoginUser();
         return ResultUtils.success(questionService.getQuestionVO(question, loginUser));
     }
 
@@ -213,10 +238,25 @@ public class QuestionController {
     public BaseResponse<Page<QuestionVO>> listQuestionVOByPage(@RequestBody QuestionQueryRequest questionQueryRequest, HttpServletRequest request) {
         long current = questionQueryRequest.getCurrent();
         long size = questionQueryRequest.getPageSize();
+
         // 限制爬虫
         ThrowUtils.throwIf(size > 20, ErrorCode.PARAMS_ERROR);
-        Page<Question> questionPage = questionService.page(new Page<>(current, size), questionService.getQueryWrapper(questionQueryRequest));
-        return ResultUtils.success(questionService.getQuestionVOPage(questionPage));
+        String pageJson = stringRedisTemplate.opsForValue().get(CACHE_QUESTION_KEY + current);
+        Page<Question> questionPage = null;
+        Page<QuestionVO> questionVoPage = null;
+        //将分页查询到的数据缓存到redis
+        if (StrUtil.isBlank(pageJson)) {
+            //3.从数据库取出来之后
+            questionPage = questionService.page(new Page<>(current, size), questionService.getQueryWrapper(questionQueryRequest));
+            questionVoPage = questionService.getQuestionVOPage(questionPage);
+            //4.再次缓存到redis,设置缓存的过期时间，30分钟，重新缓存查询一次
+            stringRedisTemplate.opsForValue().set(CACHE_QUESTION_KEY + current, JSONUtil.toJsonStr((questionVoPage)), CACHE_QUESTION_PAGE_TTL, TimeUnit.MINUTES);
+        } else {
+            log.info("加载缓存");
+            questionVoPage = JSONUtil.toBean(pageJson, new TypeReference<Page<QuestionVO>>() {
+            }, true);
+        }
+        return ResultUtils.success(questionVoPage);
     }
 
     /**
@@ -287,9 +327,26 @@ public class QuestionController {
     /**
      * 提交答案
      *
-     * @param questionSubmitAddRequest
+     * @param id 提交id
      * @return resultNum 本次点赞变化数
      */
+    @GetMapping("/question_submit/get/id")
+    public BaseResponse<QuestionSubmitVO> getJudgeResult(Long id) {
+        User loginUser = userService.getLoginUser();
+        if (id <= 0) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        QuestionSubmit questionSubmit = questionSubmitService.getById(id);
+        if (questionSubmit == null) {
+            //不存在，直接报错，返回一个空
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "提交答案不存在");
+        }
+        QuestionSubmitVO questionCommentVO = questionSubmitService.getQuestionSubmitVO(questionSubmit, loginUser);
+        return ResultUtils.success(questionCommentVO);
+
+    }
+
+
     @PostMapping("/question_submit/do")
     public BaseResponse<Long> doQuestionSubmit(@RequestBody QuestionSubmitAddRequest questionSubmitAddRequest) {
         if (questionSubmitAddRequest == null || questionSubmitAddRequest.getQuestionId() <= 0) {

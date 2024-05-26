@@ -2,6 +2,7 @@ package com.xin.xinoj.model.vo;
 
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
+import com.xin.xinoj.model.dto.question.CodeTemplate;
 import com.xin.xinoj.model.dto.question.JudgeCase;
 import com.xin.xinoj.model.dto.question.JudgeConfig;
 import com.xin.xinoj.model.entity.Question;
@@ -90,6 +91,11 @@ public class QuestionVO {
      * 题目答案
      */
     private String answer;
+
+    /**
+     * 代码模板
+     */
+    private CodeTemplate codeTemplate;
 
 
     /**

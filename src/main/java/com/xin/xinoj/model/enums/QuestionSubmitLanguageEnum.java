@@ -15,13 +15,12 @@ public enum QuestionSubmitLanguageEnum {
 
     JAVA("Java", "java"),
     CPP("CPP", "cpp"),
-    GOLANG("GoLang", "go"),
-    JAVASCRIPT("JavaScript", "javaScript"),
-    TYPESCRIPT("TypeScript", "typeScript"),
+    C("C", "c"),
     PYTHON("Python", "python"),
-    Lua("Lua", "lua"),
-    C("C", "c");
-
+    GOLANG("GoLang", "go(暂时未实现)"),
+    JAVASCRIPT("JavaScript", "javaScript(暂时未实现)"),
+    TYPESCRIPT("TypeScript", "typeScript(暂时未实现)"),
+    Lua("Lua", "lua(暂时未实现)");
 
 
     private final String text;

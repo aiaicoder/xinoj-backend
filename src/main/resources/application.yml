@@ -18,14 +18,20 @@ spring:
     url: jdbc:mysql://10.101.100.2:3306/xin_oj
     username: root
     password: 123
+  rabbitmq:
+    username: xin
+    password: lijun456789
+    host: 10.101.100.2
+    port: 5672
+    virtual-host: oj
   # Redis 配置
   # todo 需替换配置，然后取消注释
   redis:
-    database: 1
     host: 10.101.100.2
     port: 6379
     timeout: 5000
-    password: "lijun456789"
+    #password: "lijun456789"
+    #Auth: lijun45678
     lettuce:
       pool:
         # 连接池最大连接数

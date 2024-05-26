@@ -25,5 +25,4 @@ public class JudgeContext {
 
     private QuestionSubmit questionSubmit;
 
-
 }

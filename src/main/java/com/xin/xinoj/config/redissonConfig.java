@@ -10,6 +10,8 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * Redisson配置
+ *
+ * @author 15712
  */
 @Configuration
 @ConfigurationProperties(prefix = "spring.redis")
@@ -18,12 +20,14 @@ import org.springframework.context.annotation.Configuration;
 public class redissonConfig {
     private String host;
     private String port;
+//    private String Auth;
 
     @Bean
-    public RedissonClient redisClient(){
+    public RedissonClient redisClient() {
         Config redissonConfig = new Config();
-        String address = String.format("redis://%s:%s",host,port);
-        redissonConfig.useSingleServer().setAddress(address).setPassword("lijun456789").setDatabase(0);
+        String address = String.format("redis://%s:%s", host, port);
+        System.out.println(address);
+        redissonConfig.useSingleServer().setAddress(address).setDatabase(3);
         return Redisson.create(redissonConfig);
     }
 }

@@ -5,7 +5,7 @@ import org.redisson.api.RRateLimiter;
 import org.redisson.api.RateIntervalUnit;
 import org.redisson.api.RateType;
 import org.redisson.api.RedissonClient;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 
@@ -15,8 +15,8 @@ import javax.annotation.Resource;
  * @author Shier
  * CreateTime 2023/5/27 23:07
  */
-@Service
 @Slf4j
+@Component
 public class RedisLimiterManager {
 
     @Resource

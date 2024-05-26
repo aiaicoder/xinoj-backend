@@ -4,8 +4,10 @@ import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.xin.xinoj.RabbitMq.MyMessageProducer;
 import com.xin.xinoj.common.ErrorCode;
 import com.xin.xinoj.constant.CommonConstant;
+import com.xin.xinoj.constant.MqConstant;
 import com.xin.xinoj.exception.BusinessException;
 import com.xin.xinoj.judge.JudgeService;
 import com.xin.xinoj.mapper.QuestionSubmitMapper;
@@ -50,6 +52,10 @@ public class QuestionSubmitServiceImpl extends ServiceImpl<QuestionSubmitMapper,
     private JudgeService judgeService;
 
 
+    @Resource
+    private MyMessageProducer myMessageProducer;
+
+
     /**
      * 点赞
      *
@@ -86,9 +92,21 @@ public class QuestionSubmitServiceImpl extends ServiceImpl<QuestionSubmitMapper,
         if (!save) {
             throw new BusinessException(ErrorCode.SYSTEM_ERROR, "数据插入失败");
         }
+        // 设置问题的提交数
+        Integer submitNum = question.getSubmitNum();
+        Question updateQuestion = new Question();
+        synchronized (question.getSubmitNum()) {
+            submitNum = submitNum + 1;
+            updateQuestion.setId(questionId);
+            updateQuestion.setSubmitNum(submitNum);
+            save = questionService.updateById(updateQuestion);
+            if (!save) {
+                throw new BusinessException(ErrorCode.OPERATION_ERROR, "数据保存失败");
+            }
+        }
         Long questionSubmitId = questionSubmit.getId();
         // 异步调用判题服务
-        judgeService.doJudge(questionSubmitId);
+        myMessageProducer.sendMessage(MqConstant.DIRECT_EXCHANGE, "oj", String.valueOf(questionSubmitId));
         return questionSubmitId;
     }
 
@@ -112,7 +130,9 @@ public class QuestionSubmitServiceImpl extends ServiceImpl<QuestionSubmitMapper,
         Integer visible = questionQueryRequest.getVisible();
         String sortField = questionQueryRequest.getSortField();
         String sortOrder = questionQueryRequest.getSortOrder();
-
+        if ("所有编程语言".equals(language)) {
+            language = null;
+        }
         queryWrapper.eq(ObjectUtils.isNotEmpty(language), "language", language);
         queryWrapper.eq(ObjectUtils.isNotEmpty(userId), "userId", userId);
         queryWrapper.eq(ObjectUtils.isNotEmpty(questionId), "questionId", questionId);

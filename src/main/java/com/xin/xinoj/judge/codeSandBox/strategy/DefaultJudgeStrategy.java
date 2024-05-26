@@ -1,11 +1,10 @@
 package com.xin.xinoj.judge.codeSandBox.strategy;
 
 import cn.hutool.json.JSONUtil;
+import com.xin.xinoj.judge.codeSandBox.model.JudgeInfo;
 import com.xin.xinoj.model.dto.question.JudgeCase;
 import com.xin.xinoj.model.dto.question.JudgeConfig;
-import com.xin.xinoj.judge.codeSandBox.model.JudgeInfo;
 import com.xin.xinoj.model.entity.Question;
-import com.xin.xinoj.model.entity.QuestionSubmit;
 import com.xin.xinoj.model.enums.JudgeInfoMessageEnum;
 
 import java.util.List;
@@ -18,7 +17,6 @@ public class DefaultJudgeStrategy implements JudgeStrategy {
         List<String> outputList = judgeContext.getOutputList();
         List<JudgeCase> judgeCaseList = judgeContext.getJudgeCaseList();
         Question question = judgeContext.getQuestion();
-        QuestionSubmit questionSubmit = judgeContext.getQuestionSubmit();
         JudgeInfoMessageEnum judgeInfoMessageEnum = JudgeInfoMessageEnum.ACCEPTED;
         Long memory = judgeInfo.getMemory();
         Long time = judgeInfo.getTime();

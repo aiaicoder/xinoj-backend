@@ -2,6 +2,7 @@ package com.xin.xinoj.model.vo;
 
 import cn.hutool.json.JSONUtil;
 import com.xin.xinoj.judge.codeSandBox.model.JudgeInfo;
+import com.xin.xinoj.model.dto.question.CodeTemplate;
 import com.xin.xinoj.model.entity.QuestionSubmit;
 import lombok.Data;
 import org.springframework.beans.BeanUtils;
@@ -63,6 +64,10 @@ public class QuestionSubmitVO {
      * 对应题目信息
      */
     private QuestionVO questionVO;
+
+
+
+
 
     /**
      * 包装类转对象
