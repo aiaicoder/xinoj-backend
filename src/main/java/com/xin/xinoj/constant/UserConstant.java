@@ -31,4 +31,11 @@ public interface UserConstant {
     String BAN_ROLE = "ban";
 
     // endregion
+
+    String DEFAULT_AVATAR ="https://my-notes-li.oss-cn-beijing.aliyuncs.com/li/4d7582688ef167dd8c910c111f22dae.jpg";
+
+    /**
+     * 默认随机生成用户名
+     */
+    String DEFAULT_USERNAME = "算法家-"+String.valueOf(System.currentTimeMillis()).substring(0,5);
 }
