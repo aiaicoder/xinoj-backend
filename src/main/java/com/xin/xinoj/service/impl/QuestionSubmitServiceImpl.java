@@ -29,6 +29,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -47,9 +48,9 @@ public class QuestionSubmitServiceImpl extends ServiceImpl<QuestionSubmitMapper,
     @Resource
     private UserServiceImpl userService;
 
-    @Resource
-    @Lazy
-    private JudgeService judgeService;
+//    @Resource
+//    @Lazy
+//    private JudgeService judgeService;
 
 
     @Resource
@@ -130,9 +131,6 @@ public class QuestionSubmitServiceImpl extends ServiceImpl<QuestionSubmitMapper,
         Integer visible = questionQueryRequest.getVisible();
         String sortField = questionQueryRequest.getSortField();
         String sortOrder = questionQueryRequest.getSortOrder();
-        if ("所有编程语言".equals(language)) {
-            language = null;
-        }
         queryWrapper.eq(ObjectUtils.isNotEmpty(language), "language", language);
         queryWrapper.eq(ObjectUtils.isNotEmpty(userId), "userId", userId);
         queryWrapper.eq(ObjectUtils.isNotEmpty(questionId), "questionId", questionId);
@@ -171,6 +169,16 @@ public class QuestionSubmitServiceImpl extends ServiceImpl<QuestionSubmitMapper,
         }).collect(Collectors.toList());
         questionVoPage.setRecords(questionVOList);
         return questionVoPage;
+    }
+
+    @Override
+    public List<QuestionSubmitVO> getQuestionSubmitVOList(List<QuestionSubmit> questionSubmitList, User loginUser) {
+        ArrayList<QuestionSubmitVO> questionSubmitListVo = new ArrayList<>();
+        questionSubmitList.forEach(questionSubmit -> {
+            QuestionSubmitVO questionSubmitVO = getQuestionSubmitVO(questionSubmit, loginUser);
+            questionSubmitListVo.add(questionSubmitVO);
+        });
+        return questionSubmitListVo;
     }
 
 }

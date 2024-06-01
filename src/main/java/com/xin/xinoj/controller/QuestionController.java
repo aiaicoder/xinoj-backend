@@ -343,7 +343,6 @@ public class QuestionController {
         }
         QuestionSubmitVO questionCommentVO = questionSubmitService.getQuestionSubmitVO(questionSubmit, loginUser);
         return ResultUtils.success(questionCommentVO);
-
     }
 
 
@@ -360,6 +359,7 @@ public class QuestionController {
         } else {
             log.info("提交成功,题号：{},用户：{}", questionSubmitAddRequest.getQuestionId(), loginUser.getId());
             Long result = questionSubmitService.doQuestionSubmit(questionSubmitAddRequest, loginUser);
+            stringRedisTemplate.delete(CACHE_QUESTION_KEY);
             return ResultUtils.success(result);
         }
 
@@ -416,6 +416,21 @@ public class QuestionController {
         }
         final User loginUser = userService.getLoginUser();
         return ResultUtils.success(questionSubmitService.getQuestionSubmitVO(questionSubmit, loginUser));
+    }
+
+    @PostMapping("question_submit/my_record/list/vo")
+    public BaseResponse<List<QuestionSubmitVO>> listMyQuestionSubmitVORecord(@RequestBody QuestionSubmitQueryRequest questionSubmitQueryRequest) {
+        User loginUser = userService.getLoginUser();
+        questionSubmitQueryRequest.setUserId(loginUser.getId());
+
+        // 获取所有 QuestionSubmit 记录
+        List<QuestionSubmit> questionSubmitList = questionSubmitService.list(questionSubmitService.getQueryWrapper(questionSubmitQueryRequest));
+
+        // 将 QuestionSubmit 列表转换为 QuestionSubmitVO 列表
+        List<QuestionSubmitVO> questionSubmitVOList = questionSubmitService.getQuestionSubmitVOList(questionSubmitList, loginUser);
+
+        // 返回数据
+        return ResultUtils.success(questionSubmitVOList);
     }
 
 

@@ -20,12 +20,15 @@ public class DefaultJudgeStrategy implements JudgeStrategy {
         JudgeInfoMessageEnum judgeInfoMessageEnum = JudgeInfoMessageEnum.ACCEPTED;
         Long memory = judgeInfo.getMemory();
         Long time = judgeInfo.getTime();
-        judgeInfo.setMemory(time);
-        judgeInfo.setTime(memory);
+        judgeInfo.setMemory(memory);
+        judgeInfo.setTime(time);
+        judgeInfo.setTotalNum(inputList.size());
         //判断输入输出是否匹配
         if (outputList.size() != inputList.size()) {
             judgeInfoMessageEnum = JudgeInfoMessageEnum.WRONG_ANSWER;
             judgeInfo.setMessage(judgeInfoMessageEnum.getValue());
+            //如果输入和输出不匹配那么直接默认通过数为0
+            judgeInfo.setPassNum(0);
             return judgeInfo;
         }
         //根据沙箱执行执行结果设置题目状态和信息
@@ -34,6 +37,8 @@ public class DefaultJudgeStrategy implements JudgeStrategy {
             if (!judgeCase.getOutput().equals(outputList.get(i))) {
                 judgeInfoMessageEnum = JudgeInfoMessageEnum.WRONG_ANSWER;
                 judgeInfo.setMessage(judgeInfoMessageEnum.getValue());
+                //通过了几个就是几个
+                judgeInfo.setPassNum(i);
                 return judgeInfo;
             }
         }

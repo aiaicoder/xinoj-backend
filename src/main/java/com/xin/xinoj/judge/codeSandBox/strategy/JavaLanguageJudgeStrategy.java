@@ -1,11 +1,10 @@
 package com.xin.xinoj.judge.codeSandBox.strategy;
 
 import cn.hutool.json.JSONUtil;
+import com.xin.xinoj.judge.codeSandBox.model.JudgeInfo;
 import com.xin.xinoj.model.dto.question.JudgeCase;
 import com.xin.xinoj.model.dto.question.JudgeConfig;
-import com.xin.xinoj.judge.codeSandBox.model.JudgeInfo;
 import com.xin.xinoj.model.entity.Question;
-import com.xin.xinoj.model.entity.QuestionSubmit;
 import com.xin.xinoj.model.enums.JudgeInfoMessageEnum;
 
 import java.util.List;
@@ -25,17 +24,19 @@ public class JavaLanguageJudgeStrategy implements JudgeStrategy {
         List<String> outputList = judgeContext.getOutputList();
         List<JudgeCase> judgeCaseList = judgeContext.getJudgeCaseList();
         Question question = judgeContext.getQuestion();
-        QuestionSubmit questionSubmit = judgeContext.getQuestionSubmit();
         JudgeInfoMessageEnum judgeInfoMessageEnum = JudgeInfoMessageEnum.ACCEPTED;
         //获取内存，没有获取到就设置默认值
-        Long memory = Optional.ofNullable(judgeInfo.getMemory()).orElse(0L);
+        Long memory = Optional.ofNullable(judgeInfo.getMemory()).orElse(0L) / 1024;
         Long time = Optional.ofNullable(judgeInfo.getTime()).orElse(0L);
         judgeInfo.setMemory(memory);
         judgeInfo.setTime(time);
+        judgeInfo.setTotalNum(inputList.size());
         //判断输入输出是否匹配
         if (outputList.size() != inputList.size()) {
             judgeInfoMessageEnum = JudgeInfoMessageEnum.WRONG_ANSWER;
             judgeInfo.setMessage(judgeInfoMessageEnum.getValue());
+            //通过了几个就是几个
+            judgeInfo.setPassNum(0);
             return judgeInfo;
         }
         //根据沙箱执行执行结果设置题目状态和信息
@@ -44,9 +45,11 @@ public class JavaLanguageJudgeStrategy implements JudgeStrategy {
             if (!judgeCase.getOutput().equals(outputList.get(i))) {
                 judgeInfoMessageEnum = JudgeInfoMessageEnum.WRONG_ANSWER;
                 judgeInfo.setMessage(judgeInfoMessageEnum.getValue());
+                judgeInfo.setPassNum(i);
                 return judgeInfo;
             }
         }
+        judgeInfo.setPassNum(outputList.size());
         //判断题目限制
         String judgeConfigStr = question.getJudgeConfig();
         JudgeConfig judgeConfig = JSONUtil.toBean(judgeConfigStr, JudgeConfig.class);

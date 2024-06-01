@@ -9,6 +9,9 @@ import com.xin.xinoj.judge.codeSandBox.CodeSandBox;
 import com.xin.xinoj.judge.codeSandBox.model.ExecuteCodeRequest;
 import com.xin.xinoj.judge.codeSandBox.model.ExecuteCodeResponse;
 
+import static com.xin.xinoj.constant.AuthConstant.AUTHREQUESTHEADER;
+import static com.xin.xinoj.constant.AuthConstant.AUTHREQUESTSECRET;
+
 /**
  * @author 15712
  * 远程调用代码接口
@@ -20,6 +23,7 @@ public class RemoteCodeSandBox implements CodeSandBox {
         String url = "http://localhost:8123/executeCode";
         String json = JSONUtil.toJsonStr(executeCodeRequest);
         String responseStr = HttpUtil.createPost(url)
+                .header(AUTHREQUESTHEADER , AUTHREQUESTSECRET)
                 .body(json)
                 .execute()
                 .body();

@@ -7,7 +7,7 @@ import com.xin.xinoj.exception.BusinessException;
 import com.xin.xinoj.judge.JudgeService;
 import com.xin.xinoj.model.entity.Question;
 import com.xin.xinoj.model.entity.QuestionSubmit;
-import com.xin.xinoj.model.enums.QuestionSubmitVisibleEnum;
+import com.xin.xinoj.model.enums.QuestionSubmitStatusEnum;
 import com.xin.xinoj.service.QuestionService;
 import com.xin.xinoj.service.QuestionSubmitService;
 import lombok.SneakyThrows;
@@ -53,7 +53,7 @@ public class MyMessageConsumer {
         try {
             judgeService.doJudge(questionSubmitId);
             QuestionSubmit questionSubmit = questionSubmitService.getById(questionSubmitId);
-            if (!questionSubmit.getStatus().equals(QuestionSubmitVisibleEnum.SUCCESS.getValue())) {
+            if (!questionSubmit.getStatus().equals(QuestionSubmitStatusEnum.SUCCESS.getValue())) {
                 channel.basicNack(deliveryTag, false, false);
                 throw new BusinessException(ErrorCode.OPERATION_ERROR, "判题失败");
             }

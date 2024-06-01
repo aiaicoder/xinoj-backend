@@ -14,8 +14,19 @@ public class JudgeInfo {
      * 题目消耗内存（kb）
      */
     private Long memory;
+
     /**
      * 题目消耗时间（ms）
      */
     private Long time;
+
+    /**
+     * 通过的案例数
+     */
+    private Integer passNum;
+
+    /**
+     * 总案例数
+     */
+    private Integer totalNum;
 }

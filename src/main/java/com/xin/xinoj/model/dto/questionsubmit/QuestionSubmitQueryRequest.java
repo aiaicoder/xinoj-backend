@@ -24,7 +24,6 @@ public class QuestionSubmitQueryRequest extends PageRequest implements Serializa
      */
     private Long questionId;
 
-
     /**
      * 用户 id
      */

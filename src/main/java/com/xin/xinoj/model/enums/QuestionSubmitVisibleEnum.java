@@ -14,9 +14,11 @@ import java.util.stream.Collectors;
 public enum QuestionSubmitVisibleEnum {
 
     // 0 自己可见，1 仅自己和好友可见，2 完全公开
-    WAITING("仅自己可见", 0),
-    RUNNING("好友可见", 1),
-    SUCCESS("公开", 2);
+    ONLY("仅自己可见", 0),
+    // 1 仅自己和好友可见
+    ONLY_FRIEND("好友可见", 1),
+    // 3 完全公开
+    PUBLIC("公开", 2);
 
     private final String text;
 

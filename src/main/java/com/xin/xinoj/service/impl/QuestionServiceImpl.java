@@ -138,10 +138,8 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question>
                 userVO = userService.getUserVO(loginUser);
             }
         }
-
         if (!userId.equals(loginUser.getId()) && !userService.isAdmin(loginUser)) {
             questionVO.setJudgeCase(null);
-            questionVO.setAnswer(null);
         }
         //添加不同的语言的代码模板
         String codeTemplateStr = ResourceUtil.readUtf8Str("CodeTemplate.json");
@@ -174,6 +172,7 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question>
                 user = userIdUserListMap.get(userId).get(0);
             }
             questionVO.setUserVO(userService.getUserVO(user));
+            questionVO.setJudgeConfig(null);
             return questionVO;
         }).collect(Collectors.toList());
         questionVOPage.setRecords(questionVOList);

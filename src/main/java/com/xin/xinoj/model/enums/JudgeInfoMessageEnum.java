@@ -13,8 +13,8 @@ import java.util.stream.Collectors;
  */
 public enum JudgeInfoMessageEnum {
 
-    ACCEPTED("成功", "Accepted"),
-    WRONG_ANSWER("答案错误", "Wrong Answer"),
+    ACCEPTED("成功", "通过"),
+    WRONG_ANSWER("答案错误", "解答错误"),
     COMPILE_ERROR("Compile Error", "编译错误"),
     MEMORY_LIMIT_EXCEEDED("", "内存溢出"),
     TIME_LIMIT_EXCEEDED("Time Limit Exceeded", "超时"),
