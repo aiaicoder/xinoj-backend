@@ -19,14 +19,14 @@ public interface QuestionCommentService extends IService<QuestionComment> {
      * @param questionId 问题id
      * @return
      */
-    public List<QuestionCommentVO> getAllCommentList(@Param("questionId") long questionId);
+    List<QuestionCommentVO> getAllCommentList(@Param("questionId") long questionId);
 
     /**
      * 根据评论id删除一条记录[是本人评论的记录]
      * @param comment 评论对象中包含回复人的id也包含被回复人的id
      * @return
      */
-    public int deleteCommentById(QuestionComment comment, User loginUser);
+    int deleteCommentById(QuestionComment comment, User loginUser);
 
     /**
      * 添加一条评论或回复记录
