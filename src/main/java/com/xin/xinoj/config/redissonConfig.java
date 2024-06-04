@@ -20,14 +20,14 @@ import org.springframework.context.annotation.Configuration;
 public class redissonConfig {
     private String host;
     private String port;
-//    private String Auth;
+    private String password;
 
     @Bean
     public RedissonClient redisClient() {
         Config redissonConfig = new Config();
         String address = String.format("redis://%s:%s", host, port);
         System.out.println(address);
-        redissonConfig.useSingleServer().setAddress(address).setDatabase(3);
+        redissonConfig.useSingleServer().setAddress(address).setPassword(password).setDatabase(1);
         return Redisson.create(redissonConfig);
     }
 }

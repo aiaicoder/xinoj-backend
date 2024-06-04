@@ -8,6 +8,7 @@ import com.xin.xinoj.model.entity.Question;
 import com.xin.xinoj.model.enums.JudgeInfoMessageEnum;
 
 import java.util.List;
+import java.util.Optional;
 
 public class DefaultJudgeStrategy implements JudgeStrategy {
     @Override
@@ -18,7 +19,7 @@ public class DefaultJudgeStrategy implements JudgeStrategy {
         List<JudgeCase> judgeCaseList = judgeContext.getJudgeCaseList();
         Question question = judgeContext.getQuestion();
         JudgeInfoMessageEnum judgeInfoMessageEnum = JudgeInfoMessageEnum.ACCEPTED;
-        Long memory = judgeInfo.getMemory();
+        Long memory =  Optional.ofNullable(judgeInfo.getMemory()).orElse(0L) / 1024;
         Long time = judgeInfo.getTime();
         judgeInfo.setMemory(memory);
         judgeInfo.setTime(time);
