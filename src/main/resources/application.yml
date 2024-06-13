@@ -15,22 +15,22 @@ spring:
   # todo 需替换配置
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://175.178.43.62:3306/xin_oj?serverTimezone=UTC&useSSL=false
+    url: jdbc:mysql://xxxx:3306/xin_oj?serverTimezone=UTC&useSSL=false
     username: root
-    password: lijun456789
+    password:xxxx
   rabbitmq:
-    username: xin
-    password: lijun456789
-    host: 175.178.43.62
+    username: xxx
+    password: xxx
+    host: xxxx
     port: 5672
     virtual-host: oj
   # Redis 配置
   # todo 需替换配置，然后取消注释
   redis:
-    host: 175.178.43.62
+    host: xxxxxx
     port: 6379
     timeout: 5000
-    password: "lijun456789@"
+    password: xxxxxxx
     lettuce:
       pool:
         # 连接池最大连接数
@@ -95,10 +95,10 @@ wx:
 # todo 需替换配置
 cos:
   client:
-    accessKey: AKIDXxPk03sVuMm0zkHafVOTQAh05wZy9Pk2
-    secretKey: HOHwRoxrmfL9sY2OdjyAEQOPXddVIyZ6
-    region: ap-beijing
-    bucket: xinbo-1314980040
+    accessKey: xxxxx
+    secretKey: xxxx
+    region: xxxx
+    bucket: xxxxxxx
 # 接口文档配置
 knife4j:
   enable: true
