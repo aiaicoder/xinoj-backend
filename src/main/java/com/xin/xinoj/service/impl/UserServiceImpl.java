@@ -1,5 +1,6 @@
 package com.xin.xinoj.service.impl;
 
+import cn.dev33.satoken.exception.NotLoginException;
 import cn.dev33.satoken.stp.SaTokenInfo;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.collection.CollUtil;
@@ -151,13 +152,33 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Override
     public User getLoginUser() {
-        // 先判断是否已登录
-        Object userObj = StpUtil.getSession().get(USER_LOGIN_STATE);
-        User currentUser = (User) userObj;
-        if (currentUser == null || currentUser.getId() == null) {
-            throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
+
+        try {
+            // 先判断是否已登录
+            Object userObj = StpUtil.getSession().get(USER_LOGIN_STATE);
+            User currentUser = (User) userObj;
+            if (currentUser == null || currentUser.getId() == null) {
+                throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
+            }
+            return currentUser;
+        } catch (NotLoginException e) {
+            // 根据 NotLoginException 的类型返回不同的异常信息
+            switch (e.getType()) {
+                case NotLoginException.NOT_TOKEN:
+                    throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR, ErrorCode.NOT_LOGIN_ERROR.getMessage());
+                case NotLoginException.INVALID_TOKEN:
+                    throw new BusinessException(ErrorCode.INVALID_TOKEN_ERROR, ErrorCode.INVALID_TOKEN_ERROR.getMessage());
+                case NotLoginException.TOKEN_TIMEOUT:
+                    throw new BusinessException(ErrorCode.TOKEN_TIMEOUT_MESSAGE, ErrorCode.TOKEN_TIMEOUT_MESSAGE.getMessage());
+                case NotLoginException.BE_REPLACED:
+                    throw new BusinessException(ErrorCode.BE_REPLACED_MESSAGE, ErrorCode.BE_REPLACED_MESSAGE.getMessage());
+                case NotLoginException.KICK_OUT:
+                    throw new BusinessException(ErrorCode.KICK_OUT_ERROR, ErrorCode.KICK_OUT_ERROR.getMessage());
+                case NotLoginException.TOKEN_FREEZE:
+                    throw new BusinessException(ErrorCode.TOKEN_FREEZE_ERROR, ErrorCode.TOKEN_FREEZE_ERROR.getMessage());
+            }
         }
-        return currentUser;
+        return null;
     }
 
     /**

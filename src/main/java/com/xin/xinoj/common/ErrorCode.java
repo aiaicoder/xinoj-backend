@@ -17,7 +17,16 @@ public enum ErrorCode {
     SYSTEM_ERROR(50000, "系统内部异常"),
     OPERATION_ERROR(50001, "操作失败"),
     API_REQUEST_ERROR(50010,"远程接口调用失败"),
-    TOO_MANY_REQUEST(50011,"请求超过限制");
+    TOO_MANY_REQUEST(50011,"请求超过限制"),
+
+    INVALID_TOKEN_ERROR(401002,"登录失效"),
+
+    BE_REPLACED_MESSAGE(401003,"账号异地登录"),
+
+    TOKEN_TIMEOUT_MESSAGE(401004,"登录过期"),
+    KICK_OUT_ERROR(401005,"你已被踢下线"),
+    TOKEN_FREEZE_ERROR(401006,"账号已被冻结");
+
 
     /**
      * 状态码
