@@ -17,7 +17,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://xxxx:3306/xin_oj?serverTimezone=UTC&useSSL=false
     username: root
-    password:xxxx
+    password: xxxx
   rabbitmq:
     username: xxx
     password: xxx
