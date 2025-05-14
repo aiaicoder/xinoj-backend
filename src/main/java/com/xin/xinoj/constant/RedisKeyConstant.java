@@ -21,5 +21,7 @@ public interface RedisKeyConstant {
 
     String USER_CHANGE_KEY_PREFIX = "api:change:lock:";
 
+    String REDIS_AI_KEY = "xinOj:ai:";
+
 
 }

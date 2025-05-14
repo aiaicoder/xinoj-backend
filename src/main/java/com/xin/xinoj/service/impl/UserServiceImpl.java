@@ -152,7 +152,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Override
     public User getLoginUser() {
-
         try {
             // 先判断是否已登录
             Object userObj = StpUtil.getSession().get(USER_LOGIN_STATE);

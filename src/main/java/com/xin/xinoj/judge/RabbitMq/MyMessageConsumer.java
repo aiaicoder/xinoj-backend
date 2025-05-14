@@ -74,7 +74,7 @@ public class MyMessageConsumer {
                 }
             }
             // 手动确认消息
-            channel.basicAck(deliveryTag, false);
+
         } catch (Exception e) {
             channel.basicNack(deliveryTag, false, false);
             throw new BusinessException(ErrorCode.OPERATION_ERROR, "判题失败");
